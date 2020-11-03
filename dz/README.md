@@ -57,7 +57,7 @@ account    required	pam_exec.so /usr/local/bin/gist_login.sh
 ```
 Подключим репозиторий `docker-ce.repo`
 ```
-wget https://download.docker.com/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo
+[root@pam ~]# wget https://download.docker.com/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo
 ```
 Установим `docker`
 ```
@@ -103,7 +103,7 @@ polkit.addRule(function(action, subject) {
 [root@pam ~]# yum update systemd -y
 ```
 
-**** Выполним `vagrant up` подключимся по ssh на 192.168.11.150
+### Выполним `vagrant up` подключимся по ssh на 192.168.11.150
 1. Пользователь `admin` `passwd=admin` и `vagrant` разрешено подключение на сервер в любое время
 2. Пользователь `user1`, `user2` `passwd=user` запрещено подключение на сервер в субботу и воскресение.
 3. Пользователь `user1` разрешено выполнять перезагрузку сервиса `docker`.

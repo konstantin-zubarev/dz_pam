@@ -1,0 +1,10 @@
+---
+# vars file for roles/pam
+
+users:
+  - name: 'user1'
+    pass: '$1$ICpFGsFX$UOxIxGHbk9D/xAc7YceJS/'
+  - name: 'user2'
+    pass: '$1$ICpFGsFX$UOxIxGHbk9D/xAc7YceJS/'
+  - name: 'admin'
+    pass: '$1$HhHKzlJX$buBZPpjcZ9nfAh1Mlp4ZV0'    

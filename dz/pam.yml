@@ -1,0 +1,7 @@
+---
+- name: PAM and PolKit
+  hosts: pam
+  become: true
+  
+  roles:
+    - pam

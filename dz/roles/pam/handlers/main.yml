@@ -1,0 +1,12 @@
+---
+# handlers file for roles/pam
+- name: restart sshd
+  systemd:
+    name: sshd
+    state: restarted
+
+- name: start docker
+  systemd:
+    name: docker
+    state: started
+    enabled: yes

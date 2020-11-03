@@ -1,0 +1,88 @@
+---
+# tasks file for roles/pam
+
+- name: Add several users
+  user:
+    name: "{{ item.name }}"
+    password: "{{ item.pass }}"
+    state: present
+  loop: "{{ users }}"
+
+- name: Add to group admin
+  user:
+    name: vagrant
+    groups: admin
+    append: yes
+
+- name: Authentication ssh
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication.*$'
+    line: 'PasswordAuthentication yes'
+  notify:
+    - restart sshd
+    
+- name: Copy script
+  template:
+    src: gist_login.sh.j2
+    dest: /usr/local/bin/gist_login.sh
+    mode: a+x
+
+- name: pam_exec
+  lineinfile: 
+    dest: "{{ item }}"
+    insertafter: 'account    required     pam_nologin.so'
+    line: 'account    required	pam_exec.so /usr/local/bin/gist_login.sh'
+    state: present
+  with_items:
+    - /etc/pam.d/sshd
+    - /etc/pam.d/login
+
+
+- name: Install yum utils
+  yum:
+    name: yum-utils
+    state: latest
+
+- name: Install device-mapper-persistent-data
+  yum:
+    name: device-mapper-persistent-data
+    state: latest
+
+- name: Add Docker repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: Install Docker
+  package:
+    name: docker-ce
+    state: latest
+  notify:
+    - start docker
+
+- name: Add to group admin
+  user:
+    name: user1
+    groups: docker
+    append: yes
+
+- name: Copy PolKit rules
+  copy: 
+    src: "{{ item }}"
+    dest: /etc/polkit-1/rules.d/
+  with_items:
+    - ./roles/pam/templates/00-log-access.rules
+    - ./roles/pam/templates/01-docker-service.rules
+
+- name: Add systemctl repo
+  get_url:
+    url: https://copr.fedorainfracloud.org/coprs/jsynacek/systemd-backports-for-centos-7/repo/epel-7/jsynacek-systemd-backports-for-centos-7-epel-7.repo
+    dest: /etc/yum.repos.d/systemd-centos-7.repo
+
+
+- name: Update systemctl
+  yum:
+    name: systemd
+    state: latest
+    
